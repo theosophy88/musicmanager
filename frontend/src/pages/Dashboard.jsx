@@ -56,6 +56,14 @@ export default function Dashboard() {
 
   useEffect(() => { load() }, [])
 
+  // Auto-refresh while any job is running
+  useEffect(() => {
+    const hasRunning = jobs.some(j => j.status === 'running' || j.status === 'pending')
+    if (!hasRunning) return
+    const t = setTimeout(load, 3000)
+    return () => clearTimeout(t)
+  }, [jobs])
+
   const handleScanAll = async () => {
     for (const src of sources) {
       await api.scanSource(src.id)
@@ -180,6 +188,11 @@ export default function Dashboard() {
                     <p className="text-xs text-gray-500">
                       {j.files_found} found · {j.files_matched} matched
                     </p>
+                    {j.error_message && (
+                      <p className="text-xs text-red-400 mt-0.5 truncate max-w-xs" title={j.error_message}>
+                        {j.error_message}
+                      </p>
+                    )}
                     <p className="text-xs text-gray-600">
                       {new Date(j.created_at).toLocaleString()}
                     </p>

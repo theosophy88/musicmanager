@@ -23,6 +23,9 @@ logger = logging.getLogger(__name__)
 MUSIC_EXTS = webdav_svc.MUSIC_EXTENSIONS
 
 
+_running_tasks: set = set()
+
+
 async def run_scan(job_id: int):
     """
     Main scan coroutine.  Steps:
@@ -32,17 +35,17 @@ async def run_scan(job_id: int):
       4. Query MusicBrainz for proposed tags
     """
     db: Session = SessionLocal()
-    job: Optional[ScanJob] = db.query(ScanJob).get(job_id)
-    if not job:
-        db.close()
-        return
-
+    job: Optional[ScanJob] = None
     try:
+        job = db.get(ScanJob, job_id)
+        if not job:
+            return
+
         job.status = "running"
         job.started_at = datetime.utcnow()
         db.commit()
 
-        source: StorageSource = db.query(StorageSource).get(job.source_id)
+        source: StorageSource = db.get(StorageSource, job.source_id)
         if not source or not source.is_active:
             _fail(db, job, "Source not found or inactive")
             return
@@ -80,8 +83,9 @@ async def run_scan(job_id: int):
         logger.info("[job %d] Scan complete", job_id)
 
     except Exception as e:
-        _fail(db, job, str(e))
-        logger.exception("[job %d] Scan failed", job_id)
+        logger.exception("[job %d] Scan failed: %s", job_id, e)
+        if job is not None:
+            _fail(db, job, str(e))
     finally:
         db.close()
 

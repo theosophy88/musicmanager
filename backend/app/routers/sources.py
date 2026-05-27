@@ -31,6 +31,7 @@ class SourceOut(BaseModel):
     id: int
     name: str
     provider_type: str
+    config: dict = {}
     scan_paths: List[str]
     is_active: bool
     last_scan_at: Optional[str]
@@ -46,6 +47,7 @@ def _source_out(source: StorageSource, db: Session) -> SourceOut:
         id=source.id,
         name=source.name,
         provider_type=source.provider_type,
+        config=source.config or {},
         scan_paths=source.scan_paths or [],
         is_active=source.is_active,
         last_scan_at=source.last_scan_at.isoformat() if source.last_scan_at else None,
@@ -220,7 +222,10 @@ async def trigger_scan(
     db.commit()
     db.refresh(job)
 
-    asyncio.create_task(run_scan(job.id))
+    from app.services.scanner import _running_tasks
+    task = asyncio.create_task(run_scan(job.id))
+    _running_tasks.add(task)
+    task.add_done_callback(_running_tasks.discard)
 
     return {"job_id": job.id, "status": "pending"}
 

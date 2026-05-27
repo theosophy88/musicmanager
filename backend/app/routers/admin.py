@@ -55,6 +55,8 @@ def create_user(
 ):
     if db.query(User).filter(User.username == req.username).first():
         raise HTTPException(400, "Username already taken")
+    if db.query(User).filter(User.email == req.email).first():
+        raise HTTPException(400, "Email already registered")
     user = User(
         username=req.username,
         email=req.email,

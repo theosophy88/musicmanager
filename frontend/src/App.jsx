@@ -7,6 +7,7 @@ import FileManager from "./pages/FileManager";
 import Sources from "./pages/Sources";
 import Settings from "./pages/Settings";
 import PlayerBar from "./components/PlayerBar";
+import LoginPage from "./pages/Login";
 
 /* ── Auth guard ─────────────────────────────────────────────── */
 function RequireAuth({ children }) {
@@ -15,111 +16,7 @@ function RequireAuth({ children }) {
   return user ? children : <Navigate to="/login" replace />;
 }
 
-/* ── Login page ─────────────────────────────────────────────── */
-function LoginPage() {
-  const { login, register, loading, error } = useAuth();
-  const [mode, setMode] = React.useState("login"); // "login" | "register"
-  const [form, setForm] = React.useState({ username: "", email: "", password: "" });
-  const [formError, setFormError] = React.useState("");
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setFormError("");
-    try {
-      if (mode === "login") {
-        await login(form.username, form.password);
-      } else {
-        await register(form.username, form.email, form.password);
-      }
-    } catch (err) {
-      setFormError(err?.message || "Authentication failed");
-    }
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 mb-2">
-            <svg className="w-8 h-8 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z"/>
-            </svg>
-            <span className="text-2xl font-bold text-white tracking-tight">MusicManager</span>
-          </div>
-          <p className="text-gray-400 text-sm">Your cloud music library, beautifully organised</p>
-        </div>
-
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-2xl">
-          {/* Mode toggle */}
-          <div className="flex rounded-lg bg-gray-800 p-1 mb-6">
-            {["login", "register"].map((m) => (
-              <button
-                key={m}
-                onClick={() => setMode(m)}
-                className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-all ${
-                  mode === m ? "bg-violet-600 text-white shadow" : "text-gray-400 hover:text-white"
-                }`}
-              >
-                {m === "login" ? "Sign in" : "Create account"}
-              </button>
-            ))}
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1">Username</label>
-              <input
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
-                value={form.username}
-                onChange={(e) => setForm({ ...form, username: e.target.value })}
-                required
-                autoComplete="username"
-              />
-            </div>
-            {mode === "register" && (
-              <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1">Email</label>
-                <input
-                  type="email"
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  required
-                />
-              </div>
-            )}
-            <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1">Password</label>
-              <input
-                type="password"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                required
-                autoComplete="current-password"
-              />
-            </div>
-
-            {(formError || error) && (
-              <p className="text-red-400 text-xs bg-red-950/50 border border-red-800 rounded-lg px-3 py-2">
-                {formError || error}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-medium py-2 rounded-lg transition-colors"
-            >
-              {loading ? "Please wait…" : mode === "login" ? "Sign in" : "Create account"}
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
-}
+/* LoginPage is imported from ./pages/Login */
 
 /* ── Nav link helper ────────────────────────────────────────── */
 function SideLink({ to, icon, label }) {

@@ -27,13 +27,18 @@ export function AuthProvider({ children }) {
     return me
   }
 
+  const register = async (username, email, password) => {
+    await api.register(username, email, password)
+    return login(username, password)
+  }
+
   const logout = () => {
     localStorage.removeItem('mm_token')
     setUser(null)
   }
 
   return (
-    <AuthCtx.Provider value={{ user, loading, login, logout, setUser }}>
+    <AuthCtx.Provider value={{ user, loading, login, register, logout, setUser }}>
       {children}
     </AuthCtx.Provider>
   )

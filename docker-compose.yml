@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .          # project root — includes both backend/ and frontend/
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - musicmanager_data:/data
+    environment:
+      - DATABASE_URL=sqlite:////data/musicmanager.db
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production-use-a-long-random-string}
+      - MUSICBRAINZ_APP_NAME=${MUSICBRAINZ_APP_NAME:-MusicManager}
+      - MUSICBRAINZ_APP_VERSION=${MUSICBRAINZ_APP_VERSION:-1.0}
+      - MUSICBRAINZ_CONTACT=${MUSICBRAINZ_CONTACT:-admin@example.com}
+      - DOCKER_BUILD=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  musicmanager_data:
+    driver: local

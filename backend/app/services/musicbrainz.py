@@ -170,7 +170,6 @@ def _search_mb_sync(
         result = musicbrainzngs.search_recordings(
             query=query,
             limit=5,
-            includes=["artist-credits", "releases", "media"],
         )
     except musicbrainzngs.ResponseError as e:
         logger.warning("MusicBrainz search error: %s", e)

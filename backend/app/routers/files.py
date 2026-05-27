@@ -18,7 +18,7 @@ from pydantic import BaseModel
 from sqlalchemy import or_, and_
 from sqlalchemy.orm import Session
 
-from app.auth import get_current_user
+from app.auth import get_current_user, get_stream_user
 from app.database import (
     get_db, MusicFile, CurrentTags, ProposedTags,
     StorageSource, User,
@@ -460,7 +460,7 @@ async def rematch_file(
 @router.get("/{file_id}/stream")
 async def stream_file(
     file_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_stream_user),
     db: Session = Depends(get_db),
 ):
     """Proxy audio stream from storage provider."""

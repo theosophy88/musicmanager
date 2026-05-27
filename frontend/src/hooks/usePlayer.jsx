@@ -46,7 +46,8 @@ export function PlayerProvider({ children }) {
 
   const playTrack = (t) => {
     if (!t) return
-    audio.src = t.streamUrl
+    const token = localStorage.getItem('mm_token')
+    audio.src = token ? `${t.streamUrl}?token=${token}` : t.streamUrl
     audio.play().then(() => setPlaying(true)).catch(console.error)
     setTrack(t)
     setProgress(0)

@@ -230,7 +230,7 @@ function FullScreenSpinner() {
 
 /* ── Main layout ─────────────────────────────────────────────── */
 function AppLayout() {
-  const { currentTrack } = usePlayer();
+  const { track: currentTrack } = usePlayer();
 
   return (
     <div className="flex h-screen bg-gray-950 overflow-hidden">

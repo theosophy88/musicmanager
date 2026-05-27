@@ -11,7 +11,7 @@ import tempfile
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import AsyncIterator, List, Optional
-from urllib.parse import quote, urljoin
+from urllib.parse import quote, urljoin, urlparse
 
 import httpx
 from lxml import etree
@@ -175,7 +175,8 @@ class NextcloudProvider(StorageProvider):
     """
 
     def __init__(self, config: dict):
-        self.base_url = config["url"].rstrip("/")
+        parsed = urlparse(config["url"])
+        self.base_url = f"{parsed.scheme}://{parsed.netloc}"
         self.username = config["username"]
         self.password = config["password"]
         self.verify_ssl = config.get("verify_ssl", True)

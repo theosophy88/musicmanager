@@ -219,8 +219,22 @@ class NextcloudProvider(StorageProvider):
             )
             resp.raise_for_status()
             entries = _parse_propfind(resp.content, path)
-            # Filter out the directory itself (first entry)
-            return [e for e in entries if e.path.rstrip("/") != url.rstrip("/") and e.name]
+
+            # PROPFIND hrefs are absolute DAV paths, e.g.:
+            #   /remote.php/dav/files/erfan/Music/song.mp3
+            # Strip the DAV prefix so paths are clean relative paths, e.g.:
+            #   /Music/song.mp3
+            dav_prefix = urlparse(self._dav_base).path  # /remote.php/dav/files/erfan
+            clean_dir = path.rstrip("/")
+            result = []
+            for e in entries:
+                p = e.path
+                if p.startswith(dav_prefix):
+                    p = p[len(dav_prefix):]
+                e.path = p if p.startswith("/") else "/" + p
+                if e.path.rstrip("/") != clean_dir and e.name:
+                    result.append(e)
+            return result
 
     async def walk(self, root: str) -> AsyncIterator[FileEntry]:
         """Depth-first walk yielding music files only."""

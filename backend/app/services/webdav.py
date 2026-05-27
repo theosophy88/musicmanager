@@ -193,7 +193,8 @@ class NextcloudProvider(StorageProvider):
     def _url(self, path: str) -> str:
         """Convert a clean path like /Music/foo.mp3 to full WebDAV URL."""
         clean = path.lstrip("/")
-        return f"{self._dav_base}/{quote(clean, safe='/:@!$&\'()*+,;=')}"
+        safe_chars = "/:@!$&'()*+,;="
+        return f"{self._dav_base}/{quote(clean, safe=safe_chars)}"
 
     async def test_connection(self) -> bool:
         try:

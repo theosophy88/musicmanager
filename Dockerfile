@@ -7,7 +7,7 @@ COPY frontend/package.json frontend/package-lock.json* ./
 RUN npm install
 
 COPY frontend/ .
-RUN npm run build
+RUN DOCKER_BUILD=true npm run build
 
 # dist is written to /frontend/dist (vite default, overriding outDir to dist not ../backend/static)
 

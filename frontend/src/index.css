@@ -6,7 +6,7 @@
 
 @layer base {
   * { box-sizing: border-box; }
-  body { font-family: 'Inter', system-ui, sans-serif; }
+  body { font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif; background: #0e0d10; }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: #111827; }
   ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
